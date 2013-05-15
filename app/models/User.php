@@ -30,6 +30,11 @@ class User extends ConfideUser implements PresentableInterface {
         return new UserPresenter($this);
     }
 
+    public function profiles()
+    {
+        return $this->hasMany('Profile');
+    }
+
     /**
      * Get user by username
      * @param $username
