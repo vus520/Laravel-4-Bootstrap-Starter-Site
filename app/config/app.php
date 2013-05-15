@@ -121,6 +121,7 @@ return array(
         'Basset\BassetServiceProvider', // Better Asset Management
         'Robbo\Presenter\PresenterServiceProvider', // Presenter
         'Way\Generators\GeneratorsServiceProvider', // Generators
+        'Atticmedia\Anvard\AnvardServiceProvider', // HybridAuth
 
     ),
 

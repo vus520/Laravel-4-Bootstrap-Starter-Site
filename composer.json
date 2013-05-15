@@ -5,7 +5,8 @@
 		"zizaco/entrust": "dev-master",
 		"jasonlewis/basset": "*",
 		"jasonlewis/expressive-date": "1.*",
-		"robclancy/presenter": "1.0.*"
+		"robclancy/presenter": "1.0.*",
+        "atticmedia/anvard": "dev-master"
 	},
 	"require-dev": {
 		"way/generators": "1.0.*@dev",
