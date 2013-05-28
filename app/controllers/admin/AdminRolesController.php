@@ -16,15 +16,23 @@ class AdminRolesController extends AdminController {
     protected $role;
 
     /**
+     * Permission Model
+     * @var Permission
+     */
+    protected $permission;
+
+    /**
      * Inject the models.
      * @param User $user
      * @param Role $role
+     * @param Permission $permission
      */
-    public function __construct(User $user, Role $role)
+    public function __construct(User $user, Role $role, Permission $permission)
     {
         parent::__construct();
         $this->user = $user;
         $this->role = $role;
+        $this->permission = $permission;
     }
 
     /**
@@ -49,7 +57,7 @@ class AdminRolesController extends AdminController {
     public function getCreate()
     {
         // Get all the available permissions
-        $permissions = $this->role->getAvailablePermissions();
+        $permissions = $this->permission->all();
 
         // Selected permissions
         $selectedPermissions = Input::old('permissions', array());
@@ -80,20 +88,22 @@ class AdminRolesController extends AdminController {
             $inputs = Input::except('csrf_token');
 
             $this->role->name = $inputs['name'];
-            $this->role->permissions = $this->role->preparePermissionsForSave($inputs['permissions']);
             $this->role->save();
 
-            // Was the group created?
+            // Save permissions
+            $this->role->perms()->sync($this->permission->preparePermissionsForSave($inputs['permissions']));
+
+            // Was the role created?
             if ($this->role->id)
             {
-                // Redirect to the new group page
+                // Redirect to the new role page
                 return Redirect::to('admin/roles/' . $this->role->id . '/edit')->with('success', Lang::get('admin/roles/messages.create.success'));
             }
 
-            // Redirect to the new group page
+            // Redirect to the new role page
             return Redirect::to('admin/roles/create')->with('error', Lang::get('admin/roles/messages.create.error'));
 
-            // Redirect to the group create page
+            // Redirect to the role create page
             return Redirect::to('admin/roles/create')->withInput()->with('error', Lang::get('admin/roles/messages.' . $error));
         }
 
@@ -122,20 +132,16 @@ class AdminRolesController extends AdminController {
     {
         if(! empty($role))
         {
-            // Get all the available permissions
-            $permissions = $this->role->getAvailablePermissions();
-
-            // Get this role's permissions
-            $rolePermissions = $role->preparePermissionsForDisplay($role->permissions);
+            $permissions = $this->permission->preparePermissionsForDisplay($role->perms()->get());
         }
         else
         {
-            // Redirect to the groups management page
+            // Redirect to the roles management page
             return Redirect::to('admin/roles')->with('error', Lang::get('admin/roles/messages.does_not_exist'));
         }
 
         // Show the page
-        return View::make('admin/roles/edit', compact('role', 'permissions', 'rolePermissions'));
+        return View::make('admin/roles/edit', compact('role', 'permissions'));
     }
 
     /**
@@ -157,19 +163,19 @@ class AdminRolesController extends AdminController {
         // Check if the form validates with success
         if ($validator->passes())
         {
-            // Update the group data
+            // Update the role data
             $role->name        = Input::get('name');
-            $role->permissions = $role->preparePermissionsForSave(Input::get('permissions'));
+            $role->perms()->sync($this->permission->preparePermissionsForSave(Input::get('permissions')));
 
-            // Was the group updated?
+            // Was the role updated?
             if ($role->save())
             {
-                // Redirect to the group page
+                // Redirect to the role page
                 return Redirect::to('admin/roles/' . $role->id . '/edit')->with('success', Lang::get('admin/roles/messages.update.success'));
             }
             else
             {
-                // Redirect to the group page
+                // Redirect to the role page
                 return Redirect::to('admin/roles/' . $role->id . '/edit')->with('error', Lang::get('admin/roles/messages.update.error'));
             }
         }
@@ -200,13 +206,13 @@ class AdminRolesController extends AdminController {
      */
     public function postDelete($role)
     {
-            // Was the group deleted?
+            // Was the role deleted?
             if($role->delete()) {
-                // Redirect to the group management page
+                // Redirect to the role management page
                 return Redirect::to('admin/roles')->with('success', Lang::get('admin/roles/messages.delete.success'));
             }
 
-            // There was a problem deleting the group
+            // There was a problem deleting the role
             return Redirect::to('admin/roles')->with('error', Lang::get('admin/roles/messages.delete.error'));
     }
 

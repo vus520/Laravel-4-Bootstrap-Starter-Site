@@ -47,7 +47,7 @@ class Comment extends Eloquent implements PresentableInterface{
     /**
      * Get the date the post was created.
      *
-     * @param null $date
+     * @param \Carbon|null $date
      * @return string
      */
     public function date($date=null)
@@ -56,13 +56,7 @@ class Comment extends Eloquent implements PresentableInterface{
             $date = $this->created_at;
         }
 
-        $originalDate = ExpressiveDate::make($date);
-        $clone = ExpressiveDate::make($date);
-        if((int) $originalDate->addOneWeek()->getSecondsSinceEpoch() >= (int) ExpressiveDate::make()->getSecondsSinceEpoch()) {
-            return $clone->getRelativeDate();
-        } else {
-            return $clone->getShortDate();
-        }
+        return String::date($date);
     }
 
     /**
