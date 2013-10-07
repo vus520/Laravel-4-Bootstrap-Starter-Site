@@ -53,7 +53,9 @@ class UserController extends BaseController {
                 $this->user->password_confirmation = $passwordConfirmation;
             } else {
                 // Redirect to the new user page
-                return Redirect::to('users')->with('error', Lang::get('admin/users/messages.password_does_not_match'));
+                return Redirect::to('user/create')
+                    ->withInput(Input::except('password','password_confirmation'))
+                    ->with('error', Lang::get('admin/users/messages.password_does_not_match'));
             }
         } else {
             unset($this->user->password);
@@ -239,7 +241,7 @@ class UserController extends BaseController {
         if( Confide::forgotPassword( Input::get( 'email' ) ) )
         {
             return Redirect::to('user/login')
-                ->with( 'notice', Lang::get('confide::confide.alerts.password_reset') );
+                ->with( 'notice', Lang::get('confide::confide.alerts.password_forgot') );
         }
         else
         {
@@ -268,12 +270,12 @@ class UserController extends BaseController {
     public function postReset()
     {
         $input = array(
-        'token'=>Input::get( 'token' ),
-        'password'=>Input::get( 'password' ),
-        'password_confirmation'=>Input::get( 'password_confirmation' ),
+            'token'=>Input::get( 'token' ),
+            'password'=>Input::get( 'password' ),
+            'password_confirmation'=>Input::get( 'password_confirmation' ),
         );
 
-            // By passing an array with the token, password and confirmation
+        // By passing an array with the token, password and confirmation
         if( Confide::resetPassword( $input ) )
         {
             return Redirect::to('user/login')
@@ -281,7 +283,7 @@ class UserController extends BaseController {
         }
         else
         {
-            return Redirect::to('user/reset')
+            return Redirect::to('user/reset/'.$input['token'])
                 ->withInput()
                 ->with( 'error', Lang::get('confide::confide.alerts.wrong_password_reset') );
         }
@@ -294,7 +296,7 @@ class UserController extends BaseController {
     public function getLogout()
     {
         Confide::logout();
-        
+
         return Redirect::to('/');
     }
 

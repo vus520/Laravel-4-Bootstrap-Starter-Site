@@ -87,6 +87,12 @@ Route::group(array('prefix' => 'admin', 'before' => 'auth'), function()
  *  ------------------------------------------
  */
 
+// User reset routes
+Route::get('user/reset/{token}', 'UserController@getReset')
+    ->where('token', '[0-9a-z]+');
+// User password reset
+Route::post('user/reset/{token}', 'UserController@postReset')
+    ->where('token', '[0-9a-z]+');
 //:: User Account Routes ::
 Route::post('user/{user}/edit', 'UserController@postEdit')
     ->where('user', '[0-9]+');
@@ -98,6 +104,9 @@ Route::post('user/login', 'UserController@postLogin');
 Route::controller('user', 'UserController');
 
 //:: Application Routes ::
+
+# Filter for detect language
+Route::when('contact-us','detectLang');
 
 # Contact Us Static Page
 Route::get('contact-us', function()
@@ -111,4 +120,4 @@ Route::get('{postSlug}', 'BlogController@getView');
 Route::post('{postSlug}', 'BlogController@postView');
 
 # Index Page - Last route, no matches
-Route::get('/', 'BlogController@getIndex');
+Route::get('/', array('before' => 'detectLang','uses' => 'BlogController@getIndex'));
