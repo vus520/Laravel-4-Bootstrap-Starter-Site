@@ -1,55 +1,39 @@
-@extends('admin/layouts.default')
-
-{{-- Web site Title --}}
-@section('title')
-Role Update ::
-@parent
-@stop
+@extends('admin.layouts.modal')
 
 {{-- Content --}}
 @section('content')
-<div class="page-header">
-	<h3>
-		Role Update
+	<!-- Tabs -->
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="#tab-general" data-toggle="tab">General</a></li>
+			<li><a href="#tab-permissions" data-toggle="tab">Permissions</a></li>
+		</ul>
+	<!-- ./ tabs -->
 
-		<div class="pull-right">
-			<a href="{{{ URL::to('admin/roles') }}}" class="btn btn-small btn-inverse"><i class="icon-circle-arrow-left icon-white"></i> Back</a>
-		</div>
-	</h3>
-</div>
+	{{-- Edit Role Form --}}
+	<form class="form-horizontal" method="post" action="" autocomplete="off">
+		<!-- CSRF Token -->
+		<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
+		<!-- ./ csrf token -->
 
-<!-- Tabs -->
-<ul class="nav nav-tabs">
-    <li class="active"><a href="#tab-general" data-toggle="tab">General</a></li>
-    <li><a href="#tab-permissions" data-toggle="tab">Permissions</a></li>
-</ul>
-<!-- ./ tabs -->
-
-<form class="form-horizontal" method="post" action="" autocomplete="off">
-	<!-- CSRF Token -->
-	<input type="hidden" name="_token" value="{{{ csrf_token() }}}" />
-	<!-- ./ csrf token -->
-
-	<!-- Tabs Content -->
-	<div class="tab-content">
-		<!-- General tab -->
-		<div class="tab-pane active" id="tab-general">
-			<!-- Name -->
-			<div class="control-group {{{ $errors->has('name') ? 'error' : '' }}}">
-				<label class="control-label" for="name">Name</label>
-				<div class="controls">
-					<input type="text" name="name" id="name" value="{{{ Input::old('name', $role->name) }}}" />
-					{{{ $errors->first('name', '<span class="help-inline">:message</span>') }}}
+		<!-- Tabs Content -->
+		<div class="tab-content">
+			<!-- General tab -->
+			<div class="tab-pane active" id="tab-general">
+				<!-- Name -->
+				<div class="form-group {{{ $errors->has('name') ? 'error' : '' }}}">
+					<label class="col-md-2 control-label" for="name">Name</label>
+					<div class="col-md-10">
+						<input class="form-control" type="text" name="name" id="name" value="{{{ Input::old('name', $role->name) }}}" />
+						{{{ $errors->first('name', '<span class="help-inline">:message</span>') }}}
+					</div>
 				</div>
+				<!-- ./ name -->
 			</div>
-			<!-- ./ name -->
-		</div>
-		<!-- ./ general tab -->
+			<!-- ./ general tab -->
 
-		<!-- Permissions tab -->
-		<div class="tab-pane" id="tab-permissions">
-			<div class="controls">
-				<div class="control-group">
+			<!-- Permissions tab -->
+			<div class="tab-pane" id="tab-permissions">
+				<div class="form-group">
 					@foreach ($permissions as $permission)
 					<label>
 						<input type="hidden" id="permissions[{{{ $permission['id'] }}}]" name="permissions[{{{ $permission['id'] }}}]" value="0" />
@@ -59,19 +43,18 @@ Role Update ::
 					@endforeach
 				</div>
 			</div>
+			<!-- ./ permissions tab -->
 		</div>
-		<!-- ./ permissions tab -->
-	</div>
-	<!-- ./ tabs content -->
+		<!-- ./ tabs content -->
 
-	<!-- Form Actions -->
-	<div class="control-group">
-		<div class="controls">
-			<a class="btn btn-link" href="{{{ URL::to('admin/roles') }}}">Cancel</a>
-			<button type="reset" class="btn">Reset</button>
-			<button type="submit" class="btn btn-success">Update Role</button>
+		<!-- Form Actions -->
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10">
+				<element class="btn-cancel close_popup">Cancel</element>
+				<button type="reset" class="btn btn-default">Reset</button>
+				<button type="submit" class="btn btn-success">Update Role</button>
+			</div>
 		</div>
-	</div>
-	<!-- ./ form actions -->
-</form>
+		<!-- ./ form actions -->
+	</form>
 @stop
